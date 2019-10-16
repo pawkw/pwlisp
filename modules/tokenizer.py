@@ -5,47 +5,75 @@ import re
 
 class TokenLine:
     """
-    The TokenLine class does not do any tokenizing. TokenLine objects are meant
-    to be returned and used to read through and peek at the tokens in the
-    program line that is represented. The line number is saved so that any
-    parse errors can return the line of the error.
+    The TokenLine class.
 
-    The get_line method returns the stored line number.
+    Stores a list of tokens that can be peeked.
     """
 
-    def __init__(self, tokens, line = 0):
+    def __init__(self, tokens):
         self.tokens = tokens
         self.cursor = 0
-        self.line = line
 
     def __repr__(self):
-        result = "<Line: {} ".format(self.line)+str(self.tokens)+">"
+        result = "<TokenLine: {}>".format(str(self.tokens))
         return result
 
     # Return token and increment cursor position
-    def next(self):
-        """The next method returns the next token and updates the cursor."""
+    def consume(self):
+        """The consume method returns the next token and updates the cursor."""
+        result = self.look_ahead()
         self.cursor += 1
-        return self.tokens[self.cursor - 1]
+        return result
 
     # Return token without updating cursor postion
-    def peek(self):
-        """The peek method returns the next token but does not update the
+    def look_ahead(self):
+        """The look_ahead method returns the next token but does not update the
         cursor."""
-        if self.cursor > len(self.tokens):
+        if self.cursor >= len(self.tokens):
             return None
         return self.tokens[self.cursor]
 
-    # Return the cursor position
-    def get_cursor(self):
-        """The get_cursor method returns the current position of the cursor.
-        This can be handy for printing parse errors."""
-        return self.cursor
+class Reader:
+    '''
+    Creates a token reader that keeps track of line number a position.
+
+    >>> tokens = Reader(["(def! a 5)", "(+ a 5)"])
+    >>> tokens.look_ahead()
+    '('
+    >>> tokens.consume()
+    '('
+    >>> tokens.get_line()
+    0
+    >>> tokens
+    <Reader [<TokenLine: ['(', ... >, <TokenLine: ['(', 'a', ... >]>
+    '''
+
+    def __init__(self, strings):
+        self.lines = []
+        self.line = 0
+        for index in range(len(strings)):
+            self.lines.append(TokenLine(get_tokens(strings[index])))
+
+    def __repr__(self):
+        return '<Reader {}>'.format(self.lines)
 
     def get_line(self):
-        """The get_line method returns the line number supplied to the
-        initializer. This can be handy for printing parse errors."""
         return self.line
+
+    def look_ahead(self):
+
+        # Handle end of line and blank lines in code
+        while self.lines[self.line].look_ahead() == None:
+            self.line += 1
+            if self.line >= len(self.lines):
+                return None
+        return self.lines[self.line].look_ahead()
+
+    def consume(self):
+        result = self.look_ahead()
+        if result != None:
+            self.lines[self.line].consume()
+        return result
 
 # Get tokens helper
 # Returns a list of tokens(strings)
@@ -65,25 +93,11 @@ def get_tokens(string):
 def tokenize(string):
     """
     Returns a list of TokenLine objects.
-
-    >>> prog = tokenize('(+ 1 2)')
-    [<Line: 0 ['(', '+', '1', '2', ')']>]
-    >>> prog[0].peek()
-    '('
-    >>> prog[0].next()
-    '('
-    >>> prog[0].get_line()
-    0
     """
 
     # Split the string on '\n'
     strings = string.split('\n')
-    result = []
-    # Loop through list of strings making a TokenLine
-    for index in range(len(strings)):
-        result.append(TokenLine(get_tokens(strings[index]), index))
-    print(str(result))
-    return result
+    return Reader(strings)
 
 if __name__=="__main__":
     import doctest

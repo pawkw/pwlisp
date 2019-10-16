@@ -171,6 +171,11 @@ class Key(str):
     def __repr__(self):
         return '<PWLisp key {}>'.format(str(self))
 
+class Symbol(str):
+    def __repr__(self):
+        return '<PWLisp symbol {}>'.format(str(self))
+
+# Symbol(s)
 # Exception
 class Error(Exception):
     pass
