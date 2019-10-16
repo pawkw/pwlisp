@@ -14,11 +14,11 @@ class Function:
     def __init__(self, name, apply, params, env, code = None, builtin = False, macro = False, doc = None):
         self.name = name
         self.apply = apply
-        self.params = paras
+        self.params = params
         self.env = env
         self.code = code
-        self.is_builtin = is_builtin
-        self.is_macro = is_macro
+        self.is_builtin = builtin
+        self.is_macro = macro
         self.doc = doc
 
     def __str__(self):
@@ -82,6 +82,5 @@ class Key(str):
     pass
 
 # Exception
-# // TODO: Find a non-clashing name.
-class pwlException(Exception):
+class Error(Exception):
     pass
