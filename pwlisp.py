@@ -15,8 +15,8 @@ def Evaluate:
 # Define macro
 # Quote
 # If
-# Or - Built in or special?
-# And - Built in or special?
+# Or
+# And
 # Try/catch
 # Function
 # Else apply function
