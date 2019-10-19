@@ -2,7 +2,7 @@
 
 # Function
 class Function:
-    def __init__(self, name, apply, params = [], env = [], code = None, builtin = False, macro = False, doc = None):
+    def __init__(self, name, apply, params = [], env = [], expression = None, builtin = False, macro = False, doc = None):
         """
         Create a PWLisp function.
 
@@ -22,14 +22,14 @@ class Function:
         >>> first([1, 2, 3])
         1
         """
-        self.name = name
+        self.name = String(name)
         self.apply = apply
         self.params = params
         self.env = env
-        self.code = code
+        self.expression = expression
         self.is_builtin = builtin
         self.is_macro = macro
-        self.doc = doc
+        self.doc = String(doc)
 
     def __str__(self):
         result = self.name
@@ -52,7 +52,7 @@ class Function:
         >>> print(first.doc)
         Return the first item in a list.
         '''
-        self.doc = doc
+        self.doc = String(doc)
 
 # List
 class List(list):
@@ -85,11 +85,18 @@ class List(list):
         if len(self) == 0:
             return result + ')'
         for x in self:
-            result += str(x) +' '
+            result = result + str(x) +' '
         return result[:-1] + ')'
 
     def __repr__(self):
-        return '<PWLisp list {}>'.format(str(self))
+        result = '('
+        if len(self) == 0:
+            result += ')'
+        else:
+            for x in self:
+                result += repr(x)+' '
+            result += ')'
+        return '<PWLisp list {}>'.format(result)
 
 # Dict
 class Dict(dict):

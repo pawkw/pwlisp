@@ -1,8 +1,49 @@
 # Built in functions
 # Special forms are defined in pwlisp.py
-# All the helper functions are below the dict.
 
-from pwl_types import *
+from modules.pwl_types import *
+import time
+
+def concat(*args):
+    print("Not implemented.")
+    pass
+
+def merge(*args):
+    print("Not implemented.")
+    pass
+
+def flatten(*args):
+    print("Not implemented.")
+    pass
+
+def assoc(thisdict, *args):
+    return Dict(**thisdict, **Dict(args))
+
+def remove(item, *args):
+    # Equivalent to result = Dict(item) or List(item)
+    result = type(item)(item)
+    for x in args:
+        result.pop(x)
+    return result
+
+def apply(func, *args):
+    return func(*args)
+
+def display(*args):
+    print(str(*args))
+    pass
+
+def pwl_import(file_name):
+    print("Not implemented.")
+    pass
+
+def read_file(file_name):
+    print("Not implemented.")
+    pass
+
+def read_line(prompt):
+    line = input(prompt)
+    return line
 
 builtInFunctions = {
     # Math and tests
@@ -61,7 +102,7 @@ builtInFunctions = {
     # macro?
     'macro?': lambda x: isinstance(x, Function) and x.is_macro,
     # builtin?
-    'is-builtin?': lambda x: isinstance(x, Function) and x.is_builtin,
+    'builtin?': lambda x: isinstance(x, Function) and x.is_builtin,
     # symbol?
     'symbol?': lambda x: isinstance(x, Symbol),
     # contains? There is no type check here so it throws an exception.
@@ -70,12 +111,24 @@ builtInFunctions = {
     # List, dict, symbol and string functions
     # concat - (variadic) Add n lists, strings together. All items must be same type
     'concat': concat,
+    # cons - prepend x onto list y.
+    'cons': lambda x, y: List([x])+y,
     # merge - (variadic) Merge n lists, dicts together. No items are duplicate. Calling on a single list deletes duplicates.
     'merge': merge,
     # length - Length of string, list or dict
     'length': lambda x: len(x),
-    # flatten - Return a flat list from Dict or List. Dict keyword are converted to Strings.
+    # flatten - Return a flat list from Dict or List. Dict keywords are converted to Strings.
     'flatten': flatten,
+    # assoc - Return a new dict including item
+    'assoc': assoc,
+    # remove - Return dict or list with item removed
+    'remove': remove,
+    # keys - Get a list of keys from a dict
+    'keys': lambda x: x.keys(),
+    # values - Get a list of value from a dict
+    'values': lambda x: x.values(),
+    # get - Get a value from a dict
+    'get': lambda x, y: x[y],
 
     # list - (variadic) Create a list
     'list': lambda *x: List(x),
@@ -91,31 +144,34 @@ builtInFunctions = {
     # first - First item of list or string
     'first': lambda x: x[0] if x else None,
     # rest - Everything after the first item
+    'rest': lambda x: x[1:] if x else None,
     # nth - nth item in list or string
-    # contains? - true if in list, dict(keyword) or string. (contains? mylist "apple")(contains? mydict :EmployeeNumber)(contains? mystring "tion")
+    'nth': lambda x, i: x[i] if x else None,
+
 
     # Function functions
     # map - (variadic) Returns a list with the function applied to each item - (map square (list 1 2 3)) -> (1 4 9)
-    # apply - (variadic) Returns result of function applied to all items - (apply eval deferred-commands "(display \"Done!\")")
+    'map': lambda func, *args: List(map(func, args)),
+    # apply - (variadic) Returns result of function applied to all items - (apply eval deferred-commands)
+    'apply': lambda x, *y: x(*y),
     # doc - Return the doc string of a function
+    'doc': lambda x: x.doc,
     # help - Same as doc
+    'help': lambda x: x.doc,
     # setdoc - Set the doc string of a user defined function - (setdoc myfunc "A helpful function.")
+    'seetdoc': lambda x, y: x.setdoc(y),
 
     # System type commands
     # display - (variadic) Display items on screen (variadic)
+    'display': display,
     ## There is no 'close' for files. Files are handled in a big chunk and automatically closed.
     # import - Read and apply a file (import "myfile.pwl") = (apply eval (read-file "myfile.pwl"))
+    'import': pwl_import,
     # read-file - Create a list of strings from a file
+    'read-file': read_file,
     # read-line - Return a string from console input.
+    'read-line': read_line,
     # time - Returns an int of time in ms from the start of the Unix epoch (January first 1970)
+    'time': lambda: int(round(time.time() * 1000))
     # *argv* - This is defined in pwlisp.py. It is a list of command line arguments.
 }
-
-def concat(*args):
-    pass
-
-def merge(*args):
-    pass
-
-def flatten(*args):
-    pass

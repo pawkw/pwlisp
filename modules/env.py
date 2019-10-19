@@ -1,5 +1,5 @@
 # Environment class
-import pwl_types as types
+import modules.pwl_types as types
 
 class Environment(dict):
     def __init__(self, parent = None, args = None, values = None):
@@ -39,7 +39,8 @@ class Environment(dict):
     def __str__(self):
         result = ""
         for item in self.keys():
-            result += str(item).rjust(15)+" : "+str(self[item])
+            result += item.rjust(15)+" : "+str(self[item])+'\n'
+        return result
 
     def __repr__(self):
         result = " ".join(self.keys())
@@ -48,6 +49,7 @@ class Environment(dict):
     # TODO: Look up how to implement dict-like functions
     def set(self, key, value):
         self[key] = value
+        return value
 
     def find(self, key):
         '''
@@ -82,4 +84,4 @@ class Environment(dict):
         env = self.find(key)
         if env:
             return env[key]
-        raise Exception("Key {} was not found in environment.")
+        raise Exception("Key {} was not found in environment.".format(key))

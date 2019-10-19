@@ -4,8 +4,8 @@
 # Otherwise, it will be the line number in the file.
 
 import re
-from tokenizer import tokenize, Reader
-import pwl_types as types
+from .tokenizer import tokenize, Reader
+import modules.pwl_types as types
 
 # Parse atom - token is a string
 # Return item
@@ -19,6 +19,8 @@ def parse_atom(token):
     <PWLisp key :a>
     >>> parse_atom('list')
     <PWLisp symbol list>
+    >>> parse_atom('a')
+    <PWLisp symbol a>
     '''
     # Regex for int and float
     int_pattern = re.compile(r"-?[0-9]+$")
@@ -98,7 +100,7 @@ def parse_expression(tokens, file_name):
     '''
     Parse an expression from TokenList.
 
-    >>> tokens = tokenize('(1 2 3))')
+    >>> tokens = tokenize(')')
     >>> parse_expression(tokens, 'console input')
     Traceback (most recent call last):
     ...
@@ -148,6 +150,6 @@ def parse(string, file_name = 'console input'):
     errors.
     """
 
-    return types.List(parse_expression(tokenize(string), file_name))
+    return parse_expression(tokenize(string), file_name)
 
     # yield parse_expression(tokenize(string), file_name)
