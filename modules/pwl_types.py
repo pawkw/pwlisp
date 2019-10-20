@@ -2,7 +2,7 @@
 
 # Function
 class Function:
-    def __init__(self, name, apply, params = [], env = [], expression = None, builtin = False, macro = False, doc = None):
+    def __init__(self, name, apply, params = [], env = [], expression = None, builtin = False, macro = False, user = False, doc = None):
         """
         Create a PWLisp function.
 
@@ -29,13 +29,15 @@ class Function:
         self.expression = expression
         self.is_builtin = builtin
         self.is_macro = macro
+        self.is_user = user
         self.doc = String(doc)
 
     def __str__(self):
         result = self.name
-        result += '' if self.is_builtin else ' : '+str(self.params)+' '+str(self.expression)
         result += ' (built in)' if self.is_builtin else ''
         result += ' (macro)' if self.is_macro else ''
+        # result += ' (user)' if self.is_user else ''
+        result += '' if self.is_builtin else ' : '+str(self.params)+' '+str(self.expression)
         return result
 
     def __repr__(self):
@@ -97,7 +99,8 @@ class List(list):
             for x in self:
                 result += repr(x)+' '
             result += ')'
-        return '<PWLisp list {}>'.format(result)
+        # return '<PWLisp list {}>'.format(result)
+        return '<PWLisp list>'
 
 # Dict
 class Dict(dict):
@@ -139,7 +142,8 @@ class Dict(dict):
         return result + '}'
 
     def __repr__(self):
-        return '<PWLisp dict {}>'.format(str(self))
+        # return '<PWLisp dict {}>'.format(str(self))
+        return '<PWLisp dict>'
 
 # String
 class String(str):
@@ -177,13 +181,18 @@ class Key(str):
         return ":"+self
 
     def __repr__(self):
-        return '<PWLisp key {}>'.format(str(self))
+        return '<PWLisp key \'{}\'>'.format(str(self))
 
 class Symbol(str):
     def __repr__(self):
-        return '<PWLisp symbol {}>'.format(str(self))
+        return '<PWLisp symbol \'{}\'>'.format(str(self))
 
 # Symbol(s)
 # Exception
 class Error(Exception):
     pass
+
+def pwl_type(item):
+    if type(item) in (Function, List, Dict, String, Key, Symbol):
+        return repr(item)
+    return type(item)

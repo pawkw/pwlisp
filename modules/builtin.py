@@ -137,6 +137,10 @@ builtInFunctions = {
     'dict': lambda *x: Dict(x),
     # string - (variadic) Create a string - joins "print" version of each item - "".join(map(lambda item: item.__str__(), args))
     'string': lambda *x: "".join(map(lambda item: str(item), x)),
+    # Float
+    'float': lambda x: float(x),
+    # Int
+    'int': lambda x: int(x),
     # symbol - Create a symbol - (symbol 'item) -> item, Using define creates a symbol automatically
     'symbol': lambda x: Symbol(x),
     # expode - Turns a string into a list of strings where each string is one character - (explode "Dave") -> ("D" "a" "v" "e")
@@ -173,7 +177,7 @@ builtInFunctions = {
     # read-line - Return a string from console input.
     'readline': read_line,
     # parse
-    'parse': lambda x: parse(x),
+    'parse': lambda x: parse(x)[0],
     # time - Returns an int of time in ms from the start of the Unix epoch (January first 1970)
     'time': lambda: int(round(time.time() * 1000))
     # *argv* - This is defined in pwlisp.py. It is a list of command line arguments.

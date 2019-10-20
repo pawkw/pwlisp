@@ -3,3 +3,7 @@
         acc
         (sum2n (- n 1) (+ acc n)))
 ))
+
+(define average (function (x, y)
+    (/ (float (+ x y)) 2)
+))

@@ -35,7 +35,9 @@ def parse_atom(token):
 
     # string
     if token[0] == '"':
-        return get_string(token)
+        if token [-1] == '"':
+            return str(token[1:-1])
+        raise types.Error('Expected a close \"')
 
     # key
     if token[0] == ':':
@@ -76,12 +78,12 @@ def parse_sequence(tokens, file_name, type, start, end):
     ast = []
     token = tokens.consume() # Get rid of start
     if token != start:
-        raise Exception('Expected {} in line {} of {}.'.format(start, tokens.get_line(), file_name))
+        raise Exception('Expected {} in line {} of {}.'.format(start, tokens.get_line() + 1, file_name))
 
     token = tokens.look_ahead()
     while token != end:
         if token == None:
-            raise Exception('Expected {} in line {} of {}.'.format(end, tokens.get_line(), file_name))
+            raise Exception('Expected {} in line {} of {}.'.format(end, tokens.get_line() + 1, file_name))
         ast.append(parse_expression(tokens, file_name))
         token = tokens.look_ahead()
     tokens.consume() # Get rid of end
@@ -110,7 +112,7 @@ def parse_expression(tokens, file_name):
     token = tokens.look_ahead()
     # Check for unexpected ends
     if token in (')', '}'):
-        raise Exception("Unexpected {} in line {} of {}.".format(token, tokens.get_line(), file_name))
+        raise Exception("Unexpected {} in line {} of {}.".format(token, tokens.get_line()+1, file_name))
 
     # list
     elif token == '(':
@@ -150,6 +152,10 @@ def parse(string, file_name = 'console input'):
     errors.
     """
 
-    return parse_expression(tokenize(string), file_name)
+    result = types.List()
+    tokens = tokenize(string)
+    while tokens.look_ahead():
+        result.append(parse_expression(tokens, file_name))
+    return result
 
     # yield parse_expression(tokenize(string), file_name)
