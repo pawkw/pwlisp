@@ -20,21 +20,31 @@ class Environment(dict):
         '''
 
         self.parent = parent
-        self.args = args
-        self.values = values
+
+        if args:
+            for index in range(len(args)):
+                # Handle variadic
+                if args[index] == '.':
+                    exps = values[index:]
+                    self[args[index+1]] = exps
+                    break
+                if index >= len(values):
+                    raise types.Error('Missing argument \'{}\'.'.format(args[index]))
+                    return
+                self[args[index]] = values[index]
 
         # Bind arguments to values
-        if args:
-            while args:
-                arg = args.pop(0)
-                value = values.pop(0)
-                # Handle variadic
-                if arg == '.':
-                    arg = args.pop(0)
-                    values = [value]+values
-                    self[arg] = types.List(values)
-                    break
-                self[arg] = value
+        # if self.args:
+        #     while self.args:
+        #         arg = self.args.pop(0)
+        #         value = self.values.pop(0)
+        #         # Handle variadic
+        #         if arg == '.':
+        #             arg = self.args.pop(0)
+        #             self.values = [value]+self.values
+        #             self[arg] = types.List(self.values)
+        #             break
+        #         self[arg] = value
 
     def __str__(self):
         result = ""

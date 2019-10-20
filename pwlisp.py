@@ -12,7 +12,7 @@ def Read(string):
 
 # Evaluate list helper
 def eval_list(exp, environment):
-    # print('eval_list',exp.__repr__())
+    # print('eval_list',repr(exp))
     if type(exp) == types.Symbol:
         return environment.get(exp)
     if type(exp) == types.List:
@@ -22,7 +22,7 @@ def eval_list(exp, environment):
 
 # Evaluate
 def Evaluate(exp, environment):
-    # print('Evaluate:', exp)
+    print('Evaluate:', exp, str(type(exp)), 'depth:', depth)
     while True:
         # macroexpand
 
@@ -47,6 +47,7 @@ def Evaluate(exp, environment):
         elif exp[0] == 'if':
             condition = Evaluate(exp[1], environment)
             exp = exp[2] if condition else exp[3]
+
         # Or
         elif exp[0] == 'or':
             evaluands = exp[1:]
@@ -76,13 +77,20 @@ def Evaluate(exp, environment):
             else:
                 result = str(environment)
             return result
+
+        # Do - Evaluate everything in the list and return only the last result
+        elif exp[0] == 'do':
+            exp = exp[1:]
+            result = eval_list(exp, environment)
+            depth -= 1
+            return result[-1]
         # Function
         elif exp[0] == 'function':
             func = exp[0]
             params = exp[1]
+            print('function : params',func,':',params)
             body = exp[2]
-            fn = types.Function('user function', lambda args: Evaluate(body,
-                Environment(environment, params, types.List(args))),
+            fn = types.Function('user function', None,
                 params,
                 environment,
                 body)
@@ -92,11 +100,11 @@ def Evaluate(exp, environment):
             items = eval_list(exp, environment)
             func = items[0]
             # print('func type:', type(func))
-            if type(func) != types.Function:
-                raise Exception("{} is not a function.".format(str(func)))
             if func.is_builtin:
                 return func(*items[1:])
             environment = Environment(func.env, func.params, items[1:])
+            print(func.expression)
+            print('func.params:', func.params, items[1:])
             exp = func.expression
             # Tail call optimization
 
@@ -114,6 +122,15 @@ root_environment = Environment()
 for key, value in builtInFunctions.items():
     root_environment.set(key, types.Function(key, value, [], root_environment, builtin = True))
 
+# eval
+root_environment.set('eval', types.Function('eval', lambda x: Evaluate(x, root_environment), [], root_environment, builtin = True))
+
+# import
+ReadEvalPrint('(define import (function (x) (eval (parse (readfile x)))))', root_environment)
+
+# argv
+root_environment.set(types.Symbol('*argv*'), types.List(sys.argv[1] if len(sys.argv) > 1 else types.List()))
+
 # Loop - The main loop
 if __name__ == '__main__':
     while True:
@@ -124,5 +141,7 @@ if __name__ == '__main__':
             print(ReadEvalPrint(line, root_environment))
         except EOFError:
             break
+        except types.Error as e:
+            print('Error:',e)
         except Exception as e:
             print("".join(traceback.format_exception(*sys.exc_info())))

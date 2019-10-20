@@ -2,6 +2,7 @@
 # Special forms are defined in pwlisp.py
 
 from modules.pwl_types import *
+from modules.parser import parse
 import time
 
 def concat(*args):
@@ -159,7 +160,7 @@ builtInFunctions = {
     # help - Same as doc
     'help': lambda x: x.doc,
     # setdoc - Set the doc string of a user defined function - (setdoc myfunc "A helpful function.")
-    'seetdoc': lambda x, y: x.setdoc(y),
+    'setdoc': lambda x, y: x.setdoc(y),
 
     # System type commands
     # display - (variadic) Display items on screen (variadic)
@@ -168,9 +169,11 @@ builtInFunctions = {
     # import - Read and apply a file (import "myfile.pwl") = (apply eval (read-file "myfile.pwl"))
     'import': pwl_import,
     # read-file - Create a list of strings from a file
-    'read-file': read_file,
+    'readfile': lambda file: open(file).read(),
     # read-line - Return a string from console input.
-    'read-line': read_line,
+    'readline': read_line,
+    # parse
+    'parse': lambda x: parse(x),
     # time - Returns an int of time in ms from the start of the Unix epoch (January first 1970)
     'time': lambda: int(round(time.time() * 1000))
     # *argv* - This is defined in pwlisp.py. It is a list of command line arguments.

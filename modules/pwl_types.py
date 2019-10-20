@@ -33,8 +33,9 @@ class Function:
 
     def __str__(self):
         result = self.name
+        result += '' if self.is_builtin else ' : '+str(self.params)+' '+str(self.expression)
         result += ' (built in)' if self.is_builtin else ''
-        result += '(macro)' if self.is_macro else ''
+        result += ' (macro)' if self.is_macro else ''
         return result
 
     def __repr__(self):

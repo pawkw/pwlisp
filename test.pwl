@@ -1,0 +1,5 @@
+(define sum2n (function (n acc)
+    (if (= n 0)
+        acc
+        (sum2n (- n 1) (+ acc n)))
+))
